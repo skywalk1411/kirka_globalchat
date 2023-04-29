@@ -41,14 +41,6 @@ client.once("ready", () => {
   const checkArray2=(thearray, thestring)=> {
     return new RegExp(`\\b(${thearray.join('|')})\\b`).test(thestring);
   };
-  const checkArray = (thearray, thestring) => {
-    for (let i = 0; i < thearray.length; i++) {
-      if (thestring.includes(thearray[i])) {
-        return true;
-      }
-    }
-    return false;
-  };
   const beautifyMsg = (x) => {
     if (x.type === 2) {
       chat.push(
