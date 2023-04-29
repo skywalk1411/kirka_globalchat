@@ -7,7 +7,13 @@ const client = new Client({
     "513",
   ],
 });
-let chat = [];
+let chatbuffer = [];
+const settings = {
+  discordMaxLength : 2000,
+  chatBufferMinimum : 6,
+  chatBufferTimeout : 2500,
+  KirkaWsReconnectTimeout: 2500,
+}
 client.once("ready", () => {
   console.log("discord connected.");
   const channel = client.channels.cache.get(channelId);
@@ -19,31 +25,31 @@ client.once("ready", () => {
   const discordSendAlert = (content) => {
     alert.send(content);
   };
-  const pushChat = () => {
-    if (chat.length >= 6) {
-      let pushChatLength = 0;
+  const pushChatBuffer = () => {
+    if (chatbuffer.length >= settings.chatBufferMinimum) {
+      let pushChatBufferLength = 0;
       let msg = "";
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < settings.chatBufferMinimum; i++) {
         if (i === 0) {
-          pushChatLength = chat[i].length;
-          msg = chat.shift() + "\n";
+          pushChatBufferLength = chatbuffer[i].length;
+          msg = chatbuffer.shift() + "\n";
         } else {
-          if (pushChatLength + chat[i]?.length <= 2000) {
-            pushChatLength = pushChatLength + chat[i]?.length;
-            msg = msg + chat.shift() + "\n";
+          if (pushChatBufferLength + chatbuffer[i]?.length <= settings.discordMaxLength) {
+            pushChatBufferLength = pushChatBufferLength + chatbuffer[i]?.length;
+            msg = msg + chatbuffer.shift() + "\n";
           }
         }
       }
       discordSendMsg(msg);
     }
-    setTimeout(pushChat, 2500);
+    setTimeout(pushChatBuffer, settings.chatBufferTimeout);
   };
-  const checkArray2=(thearray, thestring)=> {
+  const checkMessageBannedAlert = (thearray, thestring) => {
     return new RegExp(`\\b(${thearray.join('|')})\\b`).test(thestring);
   };
   const beautifyMsg = (x) => {
     if (x.type === 2) {
-      chat.push(
+      chatbuffer.push(
         `\`\`\`<${
           x?.user?.role === "MODERATOR"
             ? "✅"
@@ -56,12 +62,12 @@ client.once("ready", () => {
           x?.message
         }\`\`\``
       );
-      if (x?.user != null && checkArray2(banned,x?.message)) {
+      if (x?.user != null && checkMessageBannedAlert(banned,x?.message)) {
         discordSendAlert(`${x?.user?.name}#${x?.user?.shortId} said alert message: ${x?.message}`);
       }
     }
     if (x?.type === 13) {
-      chat.push(
+      chatbuffer.push(
         `\`\`\`<🤖SERVER> ${x?.message}\`\`\``
       );
     }
@@ -93,13 +99,13 @@ client.once("ready", () => {
       connection.on("close", function (err) {
         console.log("kirka connection close", err);
         connection.close();
-        wskirkatimer = setInterval(connectws, 2500);
+        wskirkatimer = setInterval(connectws, settings.KirkaWsReconnectTimeout);
       });
       connection.on("message", function (message) {
         let delivery = JSON.parse(message.utf8Data);
         tunneler(delivery);
       });
-      pushChat();
+      pushChatBuffer();
     });
     wskirka.connect(kirkaiows, null);
   };
