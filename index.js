@@ -10,7 +10,7 @@ const settings = {
   discordMaxLength : 2000,
   chatBufferMinimum : 6,
   chatBufferTimeout : 2500,
-  KirkaWsReconnectTimeout: 2500,
+  kirkaWsReconnectTimeout: 2500,
 }
 client.once("ready", () => {
   console.log("discord connected.");
@@ -97,7 +97,7 @@ client.once("ready", () => {
       connection.on("close", function (err) {
         console.log("kirka connection close", err);
         connection.close();
-        wskirkatimer = setInterval(connectws, settings.KirkaWsReconnectTimeout);
+        wskirkatimer = setInterval(connectws, settings.kirkaWsReconnectTimeout);
       });
       connection.on("message", function (message) {
         let delivery = JSON.parse(message.utf8Data);
