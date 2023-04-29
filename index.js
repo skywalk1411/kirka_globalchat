@@ -1,14 +1,12 @@
 const { Client } = require("discord.js");
 const websocket = require("websocket");
 const { discordkey, channelId, alertId } = require("./config/keys");
-const kirkaiows = "wss://chat.kirka.io";
 const client = new Client({
-  intents: [
-    "513",
-  ],
+  intents: [ "513" ],
 });
 let chatbuffer = [];
 const settings = {
+  kirkaiows : "wss://chat.kirka.io",
   discordMaxLength : 2000,
   chatBufferMinimum : 6,
   chatBufferTimeout : 2500,
@@ -16,14 +14,14 @@ const settings = {
 }
 client.once("ready", () => {
   console.log("discord connected.");
-  const channel = client.channels.cache.get(channelId);
-  const alert = client.channels.cache.get(alertId);
-  const banned = ['nigg@','gecko','admin','fxck','fck','nude','dev','xip','bug','nibba','nibb@'];
+  const globalChannel = client.channels.cache.get(channelId);
+  const alertChannel = client.channels.cache.get(alertId);
+  const alertWords = ['nigg@','gecko','admin','fxck','fck','nude','dev','xip','bug','nibba','nibb@'];
   const discordSendMsg = (content) => {
-    channel.send(content);
+    globalChannel.send(content);
   };
   const discordSendAlert = (content) => {
-    alert.send(content);
+    alertChannel.send(content);
   };
   const pushChatBuffer = () => {
     if (chatbuffer.length >= settings.chatBufferMinimum) {
@@ -62,7 +60,7 @@ client.once("ready", () => {
           x?.message
         }\`\`\``
       );
-      if (x?.user != null && checkMessageBannedAlert(banned,x?.message)) {
+      if (x?.user != null && checkMessageBannedAlert(alertWords,x?.message)) {
         discordSendAlert(`${x?.user?.name}#${x?.user?.shortId} said alert message: ${x?.message}`);
       }
     }
@@ -107,7 +105,7 @@ client.once("ready", () => {
       });
       pushChatBuffer();
     });
-    wskirka.connect(kirkaiows, null);
+    wskirka.connect(settings.kirkaiows, null);
   };
   connectws();
 });
