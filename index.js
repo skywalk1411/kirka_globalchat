@@ -16,7 +16,7 @@ client.once("ready", () => {
   console.log("discord connected.");
   const globalChannel = client.channels.cache.get(channelId);
   const alertChannel = client.channels.cache.get(alertId);
-  const alertWords = ['nigg@','gecko','admin','fxck','fck','nude','dev','xip','bug','nibba','nibb@'];
+  const alertWords = ['nigg@','gecko','admin','fxck','fck','nude','dev','xip','bug','nibba','nibb@','irrvlo'];
   const discordSendMsg = (content) => {
     globalChannel.send(content);
   };
