@@ -4,6 +4,7 @@ const { discordkey, channelId, alertId } = require("./config/keys");
 const client = new Client({
   intents: [ "513" ],
 });
+const bt = '`';
 let chatbuffer = [];
 const settings = {
   kirkaiows : "wss://chat.kirka.io",
@@ -61,7 +62,7 @@ client.once("ready", () => {
         }\`\`\``
       );
       if (x?.user != null && checkMessageBannedAlert(alertWords,x?.message)) {
-        discordSendAlert(`${x?.user?.name}#${x?.user?.shortId} said alert message: ${x?.message}`);
+        discordSendAlert(`${x?.user?.name}#${x?.user?.shortId} said alert message: ${bt}${bt}${bt}${x?.message}${bt}${bt}${bt}`);
       }
     }
     if (x?.type === 13) {
